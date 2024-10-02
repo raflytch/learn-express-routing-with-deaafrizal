@@ -14,13 +14,11 @@ app.get("/", (req, res) => {
   db.query(sql, async (err, result) => {
     // hasil data dari database
     try {
-      if (result.length > 0) {
-        response(200, result, "Get data from mahasiswa", res);
-      } else {
-        response(404, null, "Data not found", res);
-      }
+      const data = await result;
+      response(200, data, "Get data from mahasiswa", res);
     } catch (error) {
-      response(500, null, "Internal server error", res);
+      const err = await error;
+      response(500, err, "Internal server error", res);
     }
   });
 });
@@ -30,13 +28,15 @@ app.get("/find", (req, res) => {
   console.log(`find nim : ${req.query.nim}`);
   db.query(sql, async (err, result) => {
     try {
-      if (result.length > 0) {
-        response(200, result, "Get data from mahasiswa", res);
+      const data = await result;
+      if (data.length > 0) {
+        response(200, data, "Get data from mahasiswa", res);
       } else {
         response(404, null, "Data not found", res);
       }
     } catch (error) {
-      response(500, null, "Internal server error", res);
+      const err = await error;
+      response(500, err, "Internal server error", res);
     }
   });
 });
