@@ -2,18 +2,43 @@ const express = require("express");
 const app = express();
 const port = 3000;
 const bodyParser = require("body-parser");
+const db = require("./connection");
+const response = require("./response");
 
 app.use(bodyParser.json());
 
 // routing basic
 
 app.get("/", (req, res) => {
-  res.send("Main!");
+  const sql = "SELECT * FROM mahasiswa";
+  db.query(sql, async (err, result) => {
+    // hasil data dari database
+    try {
+      if (result.length > 0) {
+        response(200, result, "Get data from mahasiswa", res);
+      } else {
+        response(404, null, "Data not found", res);
+      }
+    } catch (error) {
+      response(500, null, "Internal server error", res);
+    }
+  });
 });
 
-app.get("/hello", (req, res) => {
-  console.log({ urlParam: req.query });
-  res.send("Hello Lalalala!");
+app.get("/find", (req, res) => {
+  const sql = `SELECT * FROM mahasiswa WHERE nim = ${req.query.nim}`;
+  console.log(`find nim : ${req.query.nim}`);
+  db.query(sql, async (err, result) => {
+    try {
+      if (result.length > 0) {
+        response(200, result, "Get data from mahasiswa", res);
+      } else {
+        response(404, null, "Data not found", res);
+      }
+    } catch (error) {
+      response(500, null, "Internal server error", res);
+    }
+  });
 });
 
 app.post("/login", (req, res) => {
